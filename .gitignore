@@ -1,0 +1,6 @@
+/data/
+/get-a-channel-bot
+*.db
+*.db-*
+.env
+.env.fish

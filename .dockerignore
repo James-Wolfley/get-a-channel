@@ -1,0 +1,6 @@
+.git
+data
+get-a-channel-bot
+*.db
+*.db-*
+README.md
