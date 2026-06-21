@@ -2,11 +2,11 @@
 
 A Discord bot that creates temporary voice channels when members join a configured trigger voice channel.
 
-## Use The Hosted Bot
+## Get Started
 
-Use this invite link if you do not want to run your own instance:
+Add the public bot to your Discord server:
 
-<https://discord.com/oauth2/authorize?client_id=1516926194040443035&permissions=17826832&scope=bot%20applications.commands>
+[Add Get A Channel Bot to your server](https://discord.com/oauth2/authorize?client_id=1516926194040443035&permissions=17826832&scope=bot%20applications.commands)
 
 The bot needs these permissions:
 
@@ -17,7 +17,7 @@ The bot needs these permissions:
 
 The bot must also be able to see and connect to the voice channel you want to use as the trigger channel.
 
-## Hosted Bot Setup
+## Server Setup
 
 1. Add the bot to your server.
 2. Join the voice channel you want people to use as the trigger channel.
@@ -34,7 +34,7 @@ Slash commands can take time to appear after the bot is first added to a server.
 
 These commands require the `Manage Server` permission.
 
-## Self Host
+## Run Your Own Instance
 
 You can also run your own instance with your own Discord application and token.
 
