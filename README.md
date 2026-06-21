@@ -64,7 +64,7 @@ The published image is available from GitHub Container Registry:
 
 ```text
 ghcr.io/james-wolfley/get-a-channel:latest
-ghcr.io/james-wolfley/get-a-channel:v1.0.0
+ghcr.io/james-wolfley/get-a-channel:1.1.0
 ```
 
 Run the published image with Podman:
@@ -137,7 +137,7 @@ podman run -d \
 mkdir -p data
 export DISCORD_TOKEN=your_token_here
 export DATABASE_PATH=./data/bot.db
-go run .
+go run ./cmd/get-a-channel-bot
 ```
 
 ## How It Works
