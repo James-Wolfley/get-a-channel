@@ -2,16 +2,29 @@
 
 A Discord bot that creates temporary voice channels when members join a configured trigger voice channel.
 
-## How It Works
+## Use The Hosted Bot
 
-- A server admin joins a voice channel and runs `/set-get-a-channel`.
-- When a member joins that voice channel, the bot creates a new voice channel in the same category.
-- The member is moved into the new channel automatically.
-- The channel is named `{DisplayName}'s Channel`.
-- Other members can join the temporary channel normally.
-- If the named owner leaves, the channel is renamed for the earliest remaining member.
-- Empty temporary channels are deleted automatically.
-- Channel state is stored in SQLite so the bot can recover after restarts.
+Use this invite link if you do not want to run your own instance:
+
+<https://discord.com/oauth2/authorize?client_id=1516926194040443035&permissions=17826832&scope=bot%20applications.commands>
+
+The bot needs these permissions:
+
+- View Channels
+- Manage Channels
+- Move Members
+- Connect
+
+The bot must also be able to see and connect to the voice channel you want to use as the trigger channel.
+
+## Hosted Bot Setup
+
+1. Add the bot to your server.
+2. Join the voice channel you want people to use as the trigger channel.
+3. Run `/set-get-a-channel`.
+4. When someone joins that voice channel, the bot will create a temporary voice channel for them and move them into it.
+
+Slash commands can take time to appear after the bot is first added to a server.
 
 ## Slash Commands
 
@@ -21,7 +34,9 @@ A Discord bot that creates temporary voice channels when members join a configur
 
 These commands require the `Manage Server` permission.
 
-## Discord Setup
+## Self Host
+
+You can also run your own instance with your own Discord application and token.
 
 Create a Discord application and bot at <https://discord.com/developers/applications>.
 
@@ -29,21 +44,42 @@ Enable this gateway intent for the bot:
 
 - Server Voice States Intent
 
-Invite the bot with these scopes:
+Invite your bot with these scopes:
 
 - `bot`
 - `applications.commands`
 
-Give the bot these permissions:
+Give your bot these permissions:
 
 - View Channels
 - Manage Channels
 - Move Members
 - Connect
 
-The bot must also be able to see and connect to the voice channel used as the trigger channel.
+Commands are registered globally when the bot starts. Discord can take time to show new or changed global commands.
 
-Slash commands are registered globally when the bot starts. Discord can take time to show new or changed global commands.
+## Container Image
+
+The published image is available from GitHub Container Registry:
+
+```text
+ghcr.io/james-wolfley/get-a-channel:latest
+ghcr.io/james-wolfley/get-a-channel:v1.0.0
+```
+
+Run the published image with Podman:
+
+```sh
+mkdir -p data
+podman run -d \
+  --name get-a-channel-bot \
+  --restart unless-stopped \
+  --env DISCORD_TOKEN=your_token_here \
+  --volume ./data:/data:Z \
+  ghcr.io/james-wolfley/get-a-channel:latest
+```
+
+SQLite data is stored in `./data/bot.db`.
 
 ## Configuration
 
@@ -61,7 +97,7 @@ Create a `.env` file:
 DISCORD_TOKEN=your_token_here
 ```
 
-Start the bot:
+Start the bot from source:
 
 ```sh
 podman compose up -d --build
@@ -75,7 +111,7 @@ podman compose logs -f
 
 SQLite data is stored in `./data/bot.db`.
 
-## Run With Podman
+## Build Locally
 
 Build the image:
 
@@ -83,7 +119,7 @@ Build the image:
 podman build -t get-a-channel-bot .
 ```
 
-Run the bot:
+Run the locally built image:
 
 ```sh
 mkdir -p data
@@ -103,3 +139,12 @@ export DISCORD_TOKEN=your_token_here
 export DATABASE_PATH=./data/bot.db
 go run .
 ```
+
+## How It Works
+
+- Temporary channels are created in the same category as the trigger voice channel.
+- The channel is named `{DisplayName}'s Channel`.
+- Other members can join the temporary channel normally.
+- If the named owner leaves, the channel is renamed for the earliest remaining member.
+- Empty temporary channels are deleted automatically.
+- Channel state is stored in SQLite so the bot can recover after restarts.
