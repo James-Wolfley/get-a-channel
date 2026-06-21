@@ -1,60 +1,57 @@
 # Get A Channel Bot
 
-A Go Discord bot that creates temporary voice channels when members join a configured trigger voice channel.
+A Discord bot that creates temporary voice channels when members join a configured trigger voice channel.
 
-## Behavior
+## How It Works
 
-- An admin joins a voice channel and runs `/set-get-a-channel`.
-- When a member joins that trigger channel, the bot creates a new voice channel in the same category.
-- The new channel is named `{DisplayName}'s Channel`.
-- The member is moved into the new channel.
-- Anyone can join the dynamic channel; no custom permission overrides are added.
-- Ownership only controls the channel name.
-- If the named owner leaves, ownership transfers to the earliest remaining member by join order.
-- Empty dynamic channels are deleted immediately.
-- Dynamic channels and join order are persisted in SQLite.
-- A periodic cleanup reconciles the database with Discord in case channels were manually deleted or events were missed.
+- A server admin joins a voice channel and runs `/set-get-a-channel`.
+- When a member joins that voice channel, the bot creates a new voice channel in the same category.
+- The member is moved into the new channel automatically.
+- The channel is named `{DisplayName}'s Channel`.
+- Other members can join the temporary channel normally.
+- If the named owner leaves, the channel is renamed for the earliest remaining member.
+- Empty temporary channels are deleted automatically.
+- Channel state is stored in SQLite so the bot can recover after restarts.
 
 ## Slash Commands
 
-- `/set-get-a-channel`: admin-only; sets your current voice channel as this server's trigger channel.
-- `/get-a-channel-status`: admin-only; shows the configured trigger channel and tracked dynamic channel count.
-- `/unset-get-a-channel`: admin-only; removes this server's trigger channel config.
+- `/set-get-a-channel`: sets your current voice channel as this server's trigger channel.
+- `/get-a-channel-status`: shows the configured trigger channel and active temporary channel count.
+- `/unset-get-a-channel`: removes this server's trigger channel configuration.
 
-Commands are registered globally by default and also registered immediately to the dev guild `605392489439821835`.
+These commands require the `Manage Server` permission.
 
 ## Discord Setup
 
 Create a Discord application and bot at <https://discord.com/developers/applications>.
 
-Enable these bot gateway intents:
+Enable this gateway intent for the bot:
 
-- Server Members Intent
 - Server Voice States Intent
 
-Invite the bot with scopes:
+Invite the bot with these scopes:
 
 - `bot`
 - `applications.commands`
 
-Required bot permissions:
+Give the bot these permissions:
 
 - View Channels
 - Manage Channels
 - Move Members
 - Connect
 
-The bot also needs access to the category/channel where the trigger channel lives.
+The bot must also be able to see and connect to the voice channel used as the trigger channel.
+
+Slash commands are registered globally when the bot starts. Discord can take time to show new or changed global commands.
 
 ## Configuration
 
 Environment variables:
 
 - `DISCORD_TOKEN`: required Discord bot token.
-- `DATABASE_PATH`: SQLite DB path, default `/data/bot.db`.
-- `CLEANUP_INTERVAL_SECONDS`: cleanup interval, default `300`.
-- `DEV_GUILD_ID`: guild for instant command registration, default `605392489439821835`. Set to empty to disable.
-- `REGISTER_GLOBAL_COMMANDS`: whether to register global commands, default `true`.
+- `DATABASE_PATH`: SQLite database path. Defaults to `/data/bot.db`.
+- `CLEANUP_INTERVAL_SECONDS`: cleanup interval for reconciling Discord state. Defaults to `300`.
 
 ## Run With Podman Compose
 
@@ -101,6 +98,7 @@ podman run -d \
 ## Run Locally
 
 ```sh
+mkdir -p data
 export DISCORD_TOKEN=your_token_here
 export DATABASE_PATH=./data/bot.db
 go run .

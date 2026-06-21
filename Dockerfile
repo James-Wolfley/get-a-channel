@@ -19,8 +19,6 @@ COPY --from=build /out/get-a-channel-bot /app/get-a-channel-bot
 
 ENV DATABASE_PATH=/data/bot.db
 ENV CLEANUP_INTERVAL_SECONDS=300
-ENV DEV_GUILD_ID=605392489439821835
-ENV REGISTER_GLOBAL_COMMANDS=true
 
 VOLUME ["/data"]
 

@@ -20,7 +20,6 @@ import (
 )
 
 const (
-	defaultDevGuildID          = "605392489439821835"
 	defaultDatabasePath        = "/data/bot.db"
 	defaultCleanupIntervalSecs = 300
 )
@@ -155,25 +154,12 @@ func (b *bot) registerCommands() error {
 	if err != nil {
 		return err
 	}
-	devGuildID := envString("DEV_GUILD_ID", defaultDevGuildID)
-	if devGuildID != "" {
-		for _, cmd := range commands {
-			if _, err := b.s.ApplicationCommandCreate(appID, devGuildID, cmd); err != nil {
-				log.Printf("warning: register dev command %s for guild %s: %v", cmd.Name, devGuildID, err)
-				continue
-			}
+	for _, cmd := range commands {
+		if _, err := b.s.ApplicationCommandCreate(appID, "", cmd); err != nil {
+			return fmt.Errorf("register global command %s: %w", cmd.Name, err)
 		}
-		log.Printf("registered dev guild commands for guild %s", devGuildID)
 	}
-
-	if envBool("REGISTER_GLOBAL_COMMANDS", true) {
-		for _, cmd := range commands {
-			if _, err := b.s.ApplicationCommandCreate(appID, "", cmd); err != nil {
-				return fmt.Errorf("register global command %s: %w", cmd.Name, err)
-			}
-		}
-		log.Println("registered global commands")
-	}
+	log.Println("registered global commands")
 
 	return nil
 }
@@ -688,19 +674,6 @@ func envString(key, fallback string) string {
 		return fallback
 	}
 	return value
-}
-
-func envBool(key string, fallback bool) bool {
-	value := strings.TrimSpace(os.Getenv(key))
-	if value == "" {
-		return fallback
-	}
-	parsed, err := strconv.ParseBool(value)
-	if err != nil {
-		log.Printf("invalid boolean %s=%q, using %v", key, value, fallback)
-		return fallback
-	}
-	return parsed
 }
 
 func envInt(key string, fallback int) int {
